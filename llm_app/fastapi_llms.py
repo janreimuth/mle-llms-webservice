@@ -6,6 +6,8 @@ from fastapi import FastAPI
 
 from llm_app.models import GenerateRequest, GenerateResponse
 from llm_app.utils import redis_client, send_prompt
+from llm_app.rag_models import RagGenerateRequest, RagGenerateResponse
+from llm_app.rag_utils import answer_climate_question, close_vector_store
 
 
 @asynccontextmanager
@@ -29,3 +31,7 @@ def home() -> dict[str, str]:
 async def generate_text(payload: GenerateRequest) -> GenerateResponse:
     """Generate text with the configured local Ollama model."""
     return await send_prompt(payload)
+
+@app.post("/climate-change", response_model=RagGenerateResponse)
+async def climate_change(request: RagGenerateRequest) -> RagGenerateResponse:
+    return await answer_climate_question(request.question)
